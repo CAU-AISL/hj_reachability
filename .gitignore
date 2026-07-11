@@ -1,3 +1,8 @@
+.claude
+CLAUDE.local.md
+examples/outputs/
+examples/u4_outputs/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
