@@ -44,6 +44,7 @@ def to_cell(items):
         cell[i] = item
     return cell
 
+
 # Number of time intervals; total slices = N_STEPS + 1.
 # Memory per trim point (lon): (N_STEPS+1) * 47*67*49*53 * 4 B
 #   N_STEPS=20 -> ~690 MB,  N_STEPS=50 -> ~1.7 GB.
@@ -95,8 +96,8 @@ solver_settings = hj.SolverSettings.with_accuracy(hj_cfg["accuracy"], **solver_k
 
 times = np.linspace(0., time_sign * hj_cfg["time"], N_STEPS + 1)
 
-npy_dir = OUTPUT_DIR / f"{axis.upper()}_NPY"
-npy_dir.mkdir(parents=True, exist_ok=True)
+mat_dir = OUTPUT_DIR / f"{axis.upper()}_MAT"
+mat_dir.mkdir(parents=True, exist_ok=True)
 shutil.copy(config_path, OUTPUT_DIR / "guam_analysis_config.yml")
 
 wh_idx = hj_cfg["wh_idx"]
@@ -119,7 +120,7 @@ for uh_idx in range(hj_cfg["uh_idx_start"], hj_cfg["uh_idx_end"] + 1):
 
     stem = f"GUAM_{axis.upper()}_{mode.upper()}_UH{uh_idx}_WH{wh_idx}"
     scipy.io.savemat(
-        npy_dir / f"{stem}_stack.mat", {
+        mat_dir / f"{stem}_stack.mat", {
             "Vslices": to_cell(vslices),
             "taus": np.asarray(taus, dtype=np.float64),
             "grid_min": np.asarray(grid_lo, dtype=np.float64),
@@ -151,8 +152,9 @@ for uh_idx in range(hj_cfg["uh_idx_start"], hj_cfg["uh_idx_end"] + 1):
         ax.set_title(f"{state_names[x_dim]} - {state_names[y_dim]}")
     fig.suptitle(stem, fontsize=14)
     fig.tight_layout()
-    fig.savefig(npy_dir / f"{stem}.png", dpi=150)
+    fig.savefig(mat_dir / f"{stem}.png", dpi=150)
     plt.close(fig)
 
     print(f"GUAM_{axis.upper()} UH{uh_idx} WH{wh_idx}: {len(vslices)} slices "
-          f"{vslices[0].shape} saved to {npy_dir / (stem + '_stack.mat')}")
+          f"{vslices[0].shape} saved to {mat_dir / (stem + '_stack.mat')}")
+    

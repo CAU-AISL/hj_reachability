@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from matplotlib.collections import LineCollection
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
 import numpy as np
+import scipy.io
 import yaml
 
 import hj_reachability as hj
@@ -45,10 +46,10 @@ PANELS = [
      "xyz": ("x", "y"), "labels": ("u (m/s)", "w (m/s)")},
     {"title": "Lon: q vs u vs theta", "kind": "3d", "axis": "lon", "dims": (2, 3), "file": "q_u_theta",
      "xyz": ("x", "h", "y"), "labels": ("q (deg/s)", "u_trim (m/s)", "theta (deg)")},
-    {"title": "Lat: v vs u vs phi", "kind": "3d", "axis": "lat", "dims": (0, 3), "file": "v_u_phi",
-     "xyz": ("x", "h", "y"), "labels": ("v (m/s)", "u_trim (m/s)", "phi (deg)")},
-    {"title": "Lat: p vs u vs r", "kind": "3d", "axis": "lat", "dims": (1, 2), "file": "p_u_r",
-     "xyz": ("x", "h", "y"), "labels": ("p (deg/s)", "u_trim (m/s)", "r (deg/s)")},
+    {"title": "Lat: v vs u vs p", "kind": "3d", "axis": "lat", "dims": (0, 1), "file": "v_u_p",
+     "xyz": ("x", "h", "y"), "labels": ("v (m/s)", "u_trim (m/s)", "p (deg/s)")},
+    {"title": "Lat: r vs u vs phi", "kind": "3d", "axis": "lat", "dims": (2, 3), "file": "r_u_phi",
+     "xyz": ("x", "h", "y"), "labels": ("r (deg/s)", "u_trim (m/s)", "phi (deg)")},
 ]
 
 FIGURE_CFG = [{"font_size": 14}]
@@ -115,14 +116,14 @@ def main():
 
         data = {}  # axis -> (values, grid, grid_shape, x_trim, scale)
         for axis in ("lon", "lat"):
-            npy_path = OUTPUT_DIR / f"GUAM_{axis.upper()}_BRT_UH{uh_idx}_WH{WH_IDX}.npy"
-            if not npy_path.exists():
+            mat_path = OUTPUT_DIR / f"GUAM_{axis.upper()}_BRT_UH{uh_idx}_WH{WH_IDX}.mat"
+            if not mat_path.exists():
                 break
             grid, grid_shape, _ = grids[axis]
             x_trim = np.asarray(trim[TRIM_ROWS[axis], col, WH_IDX - 1])
-            data[axis] = (np.load(npy_path), grid, grid_shape, x_trim, AXIS_SCALE[axis])
+            data[axis] = (scipy.io.loadmat(mat_path)["values"], grid, grid_shape, x_trim, AXIS_SCALE[axis])
         if len(data) < 2:
-            print(f"skipping UH{uh_idx}: missing lon/lat npy")
+            print(f"skipping UH{uh_idx}: missing lon/lat mat")
             continue
 
         for ax, panel in zip(axes, PANELS):

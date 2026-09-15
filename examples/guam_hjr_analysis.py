@@ -134,3 +134,4 @@ for uh_idx in range(hj_cfg["uh_idx_start"], hj_cfg["uh_idx_end"] + 1):
     print(f"Reachability analysis for GUAM_{axis.upper()} "
             f"(UH {guam_dynamics.uh:.1f} ft/s, WH {guam_dynamics.wh:.1f} ft/s) completed.")
     print(f"Results saved to {os.path.join(OUTPUT_DIR, stem + '.mat')} and {stem + '.png'}")
+    
